@@ -48,6 +48,7 @@
                 // Make POST request to FastAPI backend
                 const response = await fetch('https://sliftex-temp1.onrender.com/', {
                     method: 'POST',  // Set method to POST
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json'
                     },
