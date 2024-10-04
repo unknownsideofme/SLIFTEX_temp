@@ -99,7 +99,7 @@ templates = Jinja2Templates(directory="templates")
 async def read_root():
     return templates.TemplateResponse("index.html", {"request": "root"})
 
-@app.post("/")
+@app.post("/verify")
 async def verify_title_endpoint(request: TitleRequest):
     responses = []
     for input_title in request.titles:
