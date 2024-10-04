@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title Verification System</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #result { margin-top: 20px; }
+        .result-item { margin-bottom: 10px; }
+        .rejected { color: red; }
+        .pending { color: orange; }
+        .accepted { color: green; }
+        .header{
+            text-align: center;
+            margin-top: 2vh;
+        }
+        .container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="header">Newspaper/Journal Title Verification</h1>
+    <div class="container">
+
+        <form id="titleForm">
+            <label for="titles">Enter Titles (comma-separated):</label>
+            <input type="text" id="titles" name="titles" required>
+            <button type="submit">Submit</button>
+        </form>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('titleForm').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent the form from reloading the page
+            
+            const titlesInput = document.getElementById('titles').value;
+            const titles = titlesInput.split(',').map(title => title.trim());
+    
+            try {
+                // Make POST request to FastAPI backend
+                const response = await fetch('https://sliftex-temp1.onrender.com/', {
+                    method: 'POST',  // Set method to POST
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ titles: titles })  // Send titles as JSON
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const data = await response.json();
+                console.log('Received data:', data);
+                displayResults(data);
+            } catch (error) {
+                console.error('Error:', error.message);
+                console.error('Error stack:', error.stack);
+                alert('An error occurred while processing your request. Please try again later.');
+            }
+        });
+    
+        function displayResults(results) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';  // Clear previous results
+    
+            results.forEach(result => {
+                const statusClass = result.status === "rejected" ? "rejected" : result.status === "pending" ? "pending" : "accepted";
+                const resultItem = document.createElement('div');
+                resultItem.className = `result-item ${statusClass}`;
+                resultItem.innerHTML = `
+                    <strong>Status:</strong> ${result.status}<br>
+                    ${result.reason ? `<strong>Reason:</strong> ${result.reason}<br>` : ''}
+                    ${result.similarity_score !== undefined ? `<strong>Similarity Score:</strong> ${result.similarity_score}%<br>` : ''}
+                    ${result.verification_probability !== undefined ? `<strong>Verification Probability:</strong> ${result.verification_probability}%` : ''}
+                `;
+                resultDiv.appendChild(resultItem);
+            });
+        }
+    </script>
+</body>
+</html>
