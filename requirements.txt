@@ -79,6 +79,7 @@ pyparsing==3.1.4
 python-dateutil==2.9.0.post0
 python-Levenshtein==0.26.0
 pytz==2024.1
+pywin32==306; platform_system == "Windows"
 pyzmq==26.2.0
 RapidFuzz==3.10.0
 regex==2024.9.11
